@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+import sys
+import random
+def isprime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+def sieve_of_eratosthenes(limit):
+    primes = []
+    is_prime = [True] * (limit + 1)
+    is_prime[0] = is_prime[1] = False
+
+    for num in range(2, int(limit**0.5) + 1):
+        if is_prime[num]:
+            primes.append(num)
+            for multiple in range(num * num, limit + 1, num):
+                is_prime[multiple] = False
+
+    for num in range(int(limit**0.5) + 1, limit + 1):
+        if is_prime[num]:
+            primes.append(num)
+
+    return primes
+def pollards_rho(n):
+    if n % 2 == 0:
+        return 2, n // 2
+
+    x = random.randint(1, n - 1)
+    y = x
+    c = random.randint(1, n - 1)
+    d = 1
+
+    f = lambda x: (x**2 + c) % n
+
+    while d == 1:
+        x = f(x)
+        y = f(f(y))
+        d = gcd(abs(x - y), n)
+
+    return d, n // d
+
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
+def factorize_large_number(number, precomputed_primes):
+    for prime in precomputed_primes:
+        if prime * prime > number:
+            break
+        if number % prime == 0:
+            factor1 = prime
+            factor2 = number / prime
+            if (factor2 in precomputed_primes):
+                return (factor1, factor2)
+
+
+    factor1, factor2 = pollards_rho(number)
+    return (factor1, factor2)
+
+    return (1, number)
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: factors <file>")
+        exit()
+
+    file = sys.argv[1]
+    try:
+        with open(file, 'r') as f:
+            numbers = f.readlines()
+    except FileNotFoundError:
+        print("File not Found")
+        exit()
+    limit = 10**4
+    precomputed_primes = sieve_of_eratosthenes(limit)
+    for number in numbers:
+        iNum = int(number.strip())
+        factors = factorize_large_number(iNum, precomputed_primes)
+        if factors:
+            print(f"{iNum}={int(factors[1])}*{factors[0]}")
