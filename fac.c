@@ -1,20 +1,25 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <gmp.h>
 
-void factorize_number(long long int num) {
-    if (num % 2 == 0) {
-		printf("%lld=%lld*%d\n",num,num/2,2);
-		return;
-    }
+void factorize_number(const char *num_str) {
+    mpz_t num;
+    mpz_init_set_str(num, num_str, 10);
+	gmp_printf("%Zd=", num);
+    mpz_t factor;
+    mpz_init(factor);
 
-    for (int i = 3; i <= sqrt(num); i += 2) {
-        if (num % i == 0) {
-            printf("%lld=%lld*%d\n",num,num/i,i);
-            return;
+    while (mpz_cmp_ui(num, 1) > 0) {
+        mpz_nextprime(factor, factor);
+        if (mpz_divisible_p(num, factor)) {
+            mpz_divexact(num, num, factor);
+            gmp_printf("%Zd*%Zd\n", num, factor);
+			break;
         }
     }
-    printf("%lld=%lld*%d\n",num,num,1);
+    mpz_clear(factor);
+    mpz_clear(num);
 }
 
 int main(int argc, char *argv[]) {
@@ -31,7 +36,7 @@ int main(int argc, char *argv[]) {
     }
 	while((line = getline(&buffer, &count, fil)) != -1)
 	{
-		factorize_number(atoll(buffer));
+		factorize_number(buffer);
 	}
 
     return 0;
