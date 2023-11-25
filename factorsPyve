@@ -1,0 +1,31 @@
+#!/usr/bin/python3
+import sys
+
+
+def factorize(n):
+    '''
+    find minimum number to devide
+    '''
+    for i in range(2, int(n**0.5)+1):
+        if n % i == 0:
+            return (i, n//i)
+    return None
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: factors <file>")
+        exit()
+
+    file = sys.argv[1]
+    try:
+        with open(file, 'r') as f:
+            numbers = f.readlines()
+    except FileNotFoundError:
+        print("File not Found")
+        exit()
+    for number in numbers:
+        iNum = int(number.strip())
+        factors = factorize(iNum)
+        if factors:
+            print(f"{iNum}={factors[0]}*{factors[1]}")
