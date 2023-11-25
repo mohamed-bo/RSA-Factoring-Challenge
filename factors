@@ -6,11 +6,10 @@ def factorize(n):
     '''
     find minimum number to devide
     '''
-    i = 2
-
-    while n % i:
-        i += 1
-    return (n/i, i)
+    for i in range(2, int(n**0.5)+1):
+        if n % i == 0:
+            return (i, n//i)
+    return None
 
 
 if __name__ == "__main__":
@@ -29,4 +28,4 @@ if __name__ == "__main__":
         iNum = int(number.strip())
         factors = factorize(iNum)
         if factors:
-            print(f"{iNum}={int(factors[0])}*{factors[1]}")
+            print(f"{iNum}={factors[0]}*{factors[1]}")
