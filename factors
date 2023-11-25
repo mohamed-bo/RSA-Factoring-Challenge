@@ -73,7 +73,7 @@ if __name__ == "__main__":
     except FileNotFoundError:
         print("File not Found")
         exit()
-    limit = 10**3
+    limit = 10**2
     precomputed_primes = sieve_of_eratosthenes(limit)
     for number in numbers:
         iNum = int(number.strip())
