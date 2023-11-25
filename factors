@@ -1,8 +1,29 @@
 #!/usr/bin/env python3
 import sys
 import random
-from sympy import primerange, isprime
+def isprime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+def sieve_of_eratosthenes(limit):
+    primes = []
+    is_prime = [True] * (limit + 1)
+    is_prime[0] = is_prime[1] = False
 
+    for num in range(2, int(limit**0.5) + 1):
+        if is_prime[num]:
+            primes.append(num)
+            for multiple in range(num * num, limit + 1, num):
+                is_prime[multiple] = False
+
+    for num in range(int(limit**0.5) + 1, limit + 1):
+        if is_prime[num]:
+            primes.append(num)
+
+    return primes
 def pollards_rho(n):
     if n % 2 == 0:
         return 2, n // 2
@@ -27,8 +48,6 @@ def gcd(a, b):
     return a
 
 def factorize_large_number(number, precomputed_primes):
-    prime_factors = []
-
     for prime in precomputed_primes:
         if prime * prime > number:
             break
@@ -37,10 +56,9 @@ def factorize_large_number(number, precomputed_primes):
             factor2 = number / prime
             return (factor1, factor2)
 
-    if number > 1:
-        if not isprime(number):
-            factor1, factor2 = pollards_rho(number)
-            return (factor1, factor2)
+
+    factor1, factor2 = pollards_rho(number)
+    return (factor1, factor2)
 
     return (1, number)
 if __name__ == "__main__":
@@ -56,7 +74,7 @@ if __name__ == "__main__":
         print("File not Found")
         exit()
     limit = 10**6 
-    precomputed_primes = list(primerange(2, limit))
+    precomputed_primes = sieve_of_eratosthenes(limit)
     for number in numbers:
         iNum = int(number.strip())
         factors = factorize_large_number(iNum, precomputed_primes)
