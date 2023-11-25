@@ -25,22 +25,25 @@ def sieve_of_eratosthenes(limit):
 
     return primes
 def pollards_rho(n):
-    if n % 2 == 0:
+    if n % 2 == 0 and isprime(n // 2):
         return 2, n // 2
+    def rho(x, c):
+        return (x**2 + c) % n
 
     x = random.randint(1, n - 1)
     y = x
     c = random.randint(1, n - 1)
     d = 1
 
-    f = lambda x: (x**2 + c) % n
-
     while d == 1:
-        x = f(x)
-        y = f(f(y))
+        x = rho(x, c)
+        y = rho(rho(y, c), c)
         d = gcd(abs(x - y), n)
 
-    return d, n // d
+    if isprime(d):
+        return d, n // d
+    else:
+        return pollards_rho(d)
 
 def gcd(a, b):
     while b:
@@ -56,12 +59,12 @@ def factorize_large_number(number, precomputed_primes):
             factor2 = number / prime
             if (factor2 in precomputed_primes):
                 return (factor1, factor2)
-
+    if number in precomputed_primes:
+        return (number, 1)
 
     factor1, factor2 = pollards_rho(number)
-    return (factor1, factor2)
-
-    return (1, number)
+    print(factor2)
+    return (factor2, factor1)
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: factors <file>")
